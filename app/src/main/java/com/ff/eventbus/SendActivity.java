@@ -34,7 +34,7 @@ public class SendActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void send() {
-        EventBus.INSTANCE.post(new Person("FF", 18));
+        EventBus.INSTANCE.post(new Person("JamFF", 20));
         finish();
     }
 }

@@ -17,6 +17,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".SendActivity" />
+        <activity
+            android:name=".HermesActivity"
+            android:process=":hermes" />
     </application>
 
 </manifest>

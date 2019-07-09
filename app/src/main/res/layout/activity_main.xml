@@ -6,10 +6,27 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/bt_start"
+        android:id="@+id/bt_event"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="跳转" />
+        android:text="EventBus"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/bt_hermes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/bt_event"
+        android:text="Hermes"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/bt_get"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/bt_hermes"
+        android:text="获取Person"
+        android:textAllCaps="false" />
 
     <TextView
         android:id="@+id/tv"

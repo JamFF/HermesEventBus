@@ -6,13 +6,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ff.eventbus.lib.EventBus;
 import com.ff.eventbus.lib.Subscribe;
 import com.ff.eventbus.lib.ThreadMode;
+import com.ff.eventbus.manager.UserManager;
+import com.ff.hermes.Hermes;
+import com.ff.hermes.HermesListener;
+import com.ff.hermes.service.HermesService;
 
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "MainActivity";
 
@@ -24,33 +28,60 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         tv = findViewById(R.id.tv);
-        findViewById(R.id.bt_start).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.bt_event).setOnClickListener(this);
+        findViewById(R.id.bt_hermes).setOnClickListener(this);
+        findViewById(R.id.bt_get).setOnClickListener(this);
+
+        // 注册普通EventBus
+        EventBus.INSTANCE.register(this);
+
+        // 注册Hermes
+        Hermes.INSTANCE.init(this);
+        Hermes.INSTANCE.register(UserManager.class);
+
+        Hermes.INSTANCE.setHermesListener(new HermesListener() {
             @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, SendActivity.class));
+            public void onHermesConnected(Class<? extends HermesService> service) {
+                Log.d(TAG, "onHermesConnected: ");
+            }
+
+            @Override
+            public void onHermesDisconnected(Class<? extends HermesService> service) {
+                super.onHermesDisconnected(service);
+                Log.d(TAG, "onHermesDisconnected: ");
             }
         });
 
-        EventBus.INSTANCE.register(this);
+        // 单例设置对象
+        UserManager.getInstance().setPerson(new Person("FF", 18));
     }
 
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void receive(Person person) {
         final String text = person + "-" + Thread.currentThread().getName();
-        // 从Android7.0开始子线程也可以修改
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                // 从Android 7.0开始，子线程也可以setText
                 tv.setText(text);
             }
         });
-        Log.d(TAG, "receive: " + text);
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d(TAG, "onResume: ");
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.bt_event:
+                startActivity(new Intent(this, SendActivity.class));
+                break;
+            case R.id.bt_hermes:
+                startActivity(new Intent(this, HermesActivity.class));
+                break;
+            case R.id.bt_get:
+                Toast.makeText(this, UserManager.getInstance().getPerson().toString(),
+                        Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 
     @Override
